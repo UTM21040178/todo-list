@@ -1,5 +1,39 @@
-
+version: "3.9"
 services:
+  postgres16:
+    container_name: postgres16
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_db
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - todo
+
+  postgres-local:
+    container_name: postgres-local
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: localuser
+      POSTGRES_PASSWORD: localpassword
+      POSTGRES_DB: localdb
+    volumes:
+      - data-postgres-local:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - todo
+
   todo-list-app:
     container_name: todo-list-app
     build:
@@ -7,6 +41,50 @@ services:
       dockerfile: ./todo-list/Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_db
+      POSTGRES_HOST: postgres16
+      POSTGRES_PORT: 5432
+    depends_on:
+      postgres16:
+        condition: service_healthy
+    restart: always
+    networks:
+      - todo
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: always
+    networks:
+      - todo
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:password@postgres16:5432/todo_db?sslmode=disable"
+    restart: always
+    networks:
+      - todo
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
     restart: always
     networks:
       - todo
@@ -16,6 +94,10 @@ volumes:
     name: data-postgres
   reservation-data-postgres:
     name: reservation-data-postgres
+  data-postgres-local:
+    name: data-postgres-local
+  grafana-data:
+    name: grafana-data
 
 networks:
   todo:
