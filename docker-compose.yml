@@ -1,0 +1,23 @@
+
+services:
+  todo-list-app:
+    container_name: todo-list-app
+    build:
+      context: ./
+      dockerfile: ./todo-list/Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - todo
+
+volumes:
+  data-postgres:
+    name: data-postgres
+  reservation-data-postgres:
+    name: reservation-data-postgres
+
+networks:
+  todo:
+    name: todo
+    driver: bridge
