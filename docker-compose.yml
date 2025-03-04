@@ -92,8 +92,6 @@ services:
 volumes:
   data-postgres:
     name: data-postgres
-  reservation-data-postgres:
-    name: reservation-data-postgres
   data-postgres-local:
     name: data-postgres-local
   grafana-data:

@@ -4,8 +4,10 @@ global:
 scrape_configs:
   - job_name: 'postgres'
     static_configs:
-      - targets: ['postgres16:9187']
+      - targets: ['postgres-exporter:9187']
 
-  - job_name: 'todo-list-app'
+  - job_name: 'todo-list'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
     static_configs:
       - targets: ['todo-list-app:8080']
