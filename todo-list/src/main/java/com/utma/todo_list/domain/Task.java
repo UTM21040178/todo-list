@@ -16,6 +16,15 @@ public class Task {
     private boolean completed;
     private Long userId;
 
+    public Task(Long id, String title, String description, boolean completed, Long userId) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.completed = completed;
+        this.userId = userId;
+    }
+
+
     public String getTitle() {
         return title;
     }
