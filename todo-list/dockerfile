@@ -12,7 +12,7 @@ FROM openjdk:21-jdk
 WORKDIR /app
 RUN mkdir ./logs
 COPY --from=builder /app/todo-list/target/todo-list-1.0-SNAPSHOT.jar .
-ARG PORT_APP=8080
+ARG PORT_APP=8081
 ENV PORT $PORT_APP
 EXPOSE $PORT
 ENTRYPOINT ["java","-jar","./todo-list-1.0-SNAPSHOT.jar"]

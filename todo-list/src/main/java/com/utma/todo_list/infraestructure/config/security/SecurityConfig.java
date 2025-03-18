@@ -46,8 +46,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/tasks").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/tasks/{id}").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/tasks/{id}").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .anyRequest().permitAll()
+                ).httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable())
+                .formLogin(form -> form.disable());;
         return http.build();
     }
 
@@ -56,7 +57,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
